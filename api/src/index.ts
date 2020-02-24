@@ -21,7 +21,7 @@ function start() {
     initEventManager();
 
     const app = initApplication();
-    server = app.listen(process.env.PORT || 3000, () => {
+    server = app.listen(process.env.PORT || 4000, () => {
         console.log(`Server started`);
     });
 }

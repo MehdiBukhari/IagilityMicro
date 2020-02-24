@@ -10,5 +10,10 @@ export function initRoutes(app: express.Application) {
         } else {
             res.sendStatus(400)
         }
-    })
+    });
+    getEventManager().on('New_USER_Created', (payload: any) => {
+        console.log(`New user Created`);
+        console.log('payload :', payload);
+    });
+
 }
