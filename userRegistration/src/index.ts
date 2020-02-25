@@ -19,7 +19,7 @@ function start() {
           if(userResponse!='some thing went Wrong'){
               eventManager.emit('New_USER_Created',userResponse);
           }  
-        console.log(`MICRO APP micro-user-registered`);
+        console.log(`MICRO APP micro-user-registerede`);
         console.log('payload :', payload);
     });
     mongoose.connection.openUri('mongodb://localhost:27017/iaglitymicro',{useNewUrlParser: true });
