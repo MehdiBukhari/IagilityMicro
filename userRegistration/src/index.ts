@@ -28,7 +28,7 @@ function start() {
          let userResponse=await new userBuss().loginConsultant(newuser);
           if(userResponse!='email or password is wrong'){
               eventManager.emit('USER_LOGIN',userResponse);
-          }  
+          } 
         console.log(`MICRO APP micro-user-registered`);
         console.log('payload :', payload);
     });

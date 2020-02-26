@@ -43,14 +43,18 @@ export class userBuss{
     }
 
     async loginConsultant (payload:any):Promise<any>{
-    
-    let username= payload.username;
+    try {
+        let username= payload.username;
     let password= payload.password;
     
     if (username != null && password != null) {
         let user = await new userBuss().getAuthenticated(username);
-        if(!user) return 'email or password is wrong';
+        if(user!=null) return user ; else return 'some thing went wrong';
     }
+    } catch (error) {
+        return error
+    }
+    
 
      }
 

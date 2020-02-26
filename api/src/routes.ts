@@ -3,9 +3,10 @@ import { getEventManager } from "./eventManager";
 
 export function initRoutes(app: express.Application) {
     app.post('/event', (req, res, next) => {
-        const { name, payload } = req.body;
-        if (name && payload) {
-            getEventManager().emit(name, payload);
+        const { EventName, payload } = req.body;
+        if (EventName && payload) {
+            getEventManager().emit(EventName, payload);
+          console.log('playLoad',payload);
             res.sendStatus(204);
         } else {
             res.sendStatus(400)
