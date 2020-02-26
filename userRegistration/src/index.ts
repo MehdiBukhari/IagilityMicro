@@ -15,13 +15,26 @@ function start() {
     })
     eventManager.on('SAVEUSER', async (payload: any) => {
         let newuser:IUserModel=payload.user;
-         let userResponse=await new userBuss().singUpConsaltan(newuser);
+         let userResponse=await new userBuss().singUpConsaltant(newuser);
           if(userResponse!='some thing went Wrong'){
               eventManager.emit('New_USER_Created',userResponse);
           }  
-        console.log(`MICRO APP micro-user-registerede`);
+        console.log(`MICRO APP micro-user-registered`);
         console.log('payload :', payload);
     });
+
+    eventManager.on('LOGIN', async (payload: any) => {
+        let newuser:IUserModel=payload.user;
+         let userResponse=await new userBuss().loginConsultant(newuser);
+          if(userResponse!='email or password is wrong'){
+              eventManager.emit('USER_LOGIN',userResponse);
+          }  
+        console.log(`MICRO APP micro-user-registered`);
+        console.log('payload :', payload);
+    });
+
+
+
     mongoose.connection.openUri('mongodb://localhost:27017/iaglitymicro',{useNewUrlParser: true });
 mongoose.connection.on('connected', ()=>{
     console.log("Connected to DB");

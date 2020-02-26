@@ -13,7 +13,7 @@ export class userBuss{
              
              return user;       
         }
-    async singUpConsaltan(user:IUserModel):Promise<any>{
+    async singUpConsaltant(user:IUserModel):Promise<any>{
         try {
             let userReponse=await new MainUser().Saveuser(user);
         console.log(user);
@@ -39,8 +39,21 @@ export class userBuss{
             return error
         }
         
-      
+    
     }
+
+    async loginConsultant (payload:any):Promise<any>{
+    
+    let username= payload.username;
+    let password= payload.password;
+    
+    if (username != null && password != null) {
+        let user = await new userBuss().getAuthenticated(username);
+        if(!user) return 'email or password is wrong';
+    }
+
+     }
+
     async getOneUser(_id:string):Promise<IUserModel>{
         let user=await new MainUser().getOneUser(_id);
         if(user==null){
