@@ -17,7 +17,7 @@ export class userBuss{
              return user;       
         }
         
-    async passwordCompare(password:string): Promise <string>  {
+    async passwordCompare(password:string): Promise <any>  {
 
         
         const salt= await bcrypt.genSalt(10);
@@ -63,16 +63,12 @@ export class userBuss{
     if (username != null && password != null) {
         let user = await new userBuss().getAuthenticated(username);
         if(user!=null) return user ; else return 'some thing went wrong';
+        const correctPassword: boolean = await new userBuss().passwordCompare(password);
+        if(!correctPassword) return 'email or password is wrong';
         
     }
     
-    if (username != null && password != null) {
-        let user = await new userBuss().passwordCompare(password);
-        if(user!=null) return user ; else return 'some thing went wrong';
-        
-    }
     
-
 
     } catch (error) {
         return error
