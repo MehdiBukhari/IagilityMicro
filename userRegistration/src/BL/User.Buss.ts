@@ -5,10 +5,13 @@ import bcrypt from "bcrypt";
 import { user } from "src/utils/config";
 import { promises } from "dns";
 //import { MainConsaltant } from "../DataAccessLayer/DataAccessController/consaltantController";
+
+
 export class userBuss{
     constructor(){
 
     }
+    
     async getAuthenticated(username:string): Promise <IUserModel> {
              let user=await new MainUser().getUser(username);
              if(user === null)
@@ -17,13 +20,17 @@ export class userBuss{
              return user;       
         }
         
+        
+
+
+      
     async passwordCompare(password:string): Promise <any>  {
 
         
-        const salt= await bcrypt.genSalt(10);
-            return bcrypt.hash(password,salt);
+     return "hellpo";
         
     }
+    
 
     async singUpConsaltant(user:IUserModel):Promise<any>{
         try {
@@ -62,9 +69,12 @@ export class userBuss{
     
     if (username != null && password != null) {
         let user = await new userBuss().getAuthenticated(username);
-        if(user!=null) return user ; else return 'some thing went wrong';
         const correctPassword: boolean = await new userBuss().passwordCompare(password);
+        if(user!=null && correctPassword) return user ;
         if(!correctPassword) return 'email or password is wrong';
+        else return 'some thing went wrong';
+        
+        
         
     }
     
