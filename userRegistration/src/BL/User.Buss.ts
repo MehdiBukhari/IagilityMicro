@@ -1,6 +1,9 @@
 import {IUserModel} from "../DL/Models/IUser";
 //import { Iconsaltants } from "../DL/Models/consaltants";
 import { MainUser } from "../DL/DC/userController";
+import bcrypt from "bcrypt";
+import { user } from "src/utils/config";
+import { promises } from "dns";
 //import { MainConsaltant } from "../DataAccessLayer/DataAccessController/consaltantController";
 export class userBuss{
     constructor(){
@@ -13,12 +16,22 @@ export class userBuss{
              
              return user;       
         }
+        
+    async passwordCompare(password:string): Promise <string>  {
+
+        
+        const salt= await bcrypt.genSalt(10);
+            return bcrypt.hash(password,salt);
+        
+    }
+
     async singUpConsaltant(user:IUserModel):Promise<any>{
         try {
             let userReponse=await new MainUser().Saveuser(user);
-        console.log(user);
+            console.log(user);
        // console.log(consaltant);
         if(userReponse!==null){
+
         /*    consaltant.userId=userReponse._id
             consaltant.Email=userReponse.email
             let consaltantResponse=await new MainConsaltant().SaveOneConsaltantInformation(consaltant);
@@ -44,13 +57,23 @@ export class userBuss{
 
     async loginConsultant (payload:any):Promise<any>{
     try {
-        let username= payload.username;
+    let username= payload.username;
     let password= payload.password;
     
     if (username != null && password != null) {
         let user = await new userBuss().getAuthenticated(username);
         if(user!=null) return user ; else return 'some thing went wrong';
+        
     }
+    
+    if (username != null && password != null) {
+        let user = await new userBuss().passwordCompare(password);
+        if(user!=null) return user ; else return 'some thing went wrong';
+        
+    }
+    
+
+
     } catch (error) {
         return error
     }

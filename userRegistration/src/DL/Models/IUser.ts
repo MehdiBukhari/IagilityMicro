@@ -17,4 +17,5 @@ export interface IUserModel extends Document{
     forgetpasswordstring:string
     lastlogin:string
     loginCount:any
+    
   }

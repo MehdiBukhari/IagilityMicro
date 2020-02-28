@@ -10,6 +10,7 @@ export class MainUser{
     getUser(username:string){
         return userSchema.findOne({username:username});    
    }
+
    Saveuser(user:IUserModel){
        return new userSchema(user).save();
    }
