@@ -57,39 +57,31 @@ export class userBuss{
     }
 
     async loginConsultant (payload:any):Promise<any>{
-    try {
+    
     let username= payload.username;
     let password= payload.password;
     
     if (username != null && password != null) {
         let user = await new userBuss().getAuthenticated(username);
-        if(user!=null) {
-            if (user.status == "Not Active"){
-               return "Please Active Your Account"
+        if (user != null) {
+            if(user!=null && user.status == "Not Active" ) {
+            
+               return "Please Active Your Account"}
+               else {
+                   bcrypt.compare(password, user.password, async (err, isMatch) => {
+                       if (err) throw err;
+                       if (!isMatch) {
+                           return "User Name and Password dose not exists";
+                        }
+                        else {
+                            let currentTime=new Date().toString();}
+                        }
+                        )
+                    }
+                }
+                return "User Name and Password can't be empty";
             }
         }
-      
-        bcrypt.compare(password, user.password, async (err, isMatch) => {
-            if (err) throw err;
-            if (!isMatch) {
-                return "User Name and Password dose not exists";
-            }
-             else {
-                return "some thing went Wrong";}
-}
-        )
-    
-    return "User Name and Password can't be empty";}
-
-    
-    
-
-    } catch (error) {
-        return error
-    }
-    
-
-     }
 
     async getOneUser(_id:string):Promise<IUserModel>{
         let user=await new MainUser().getOneUser(_id);
