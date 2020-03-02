@@ -24,12 +24,6 @@ export class userBuss{
 
 
       
-    async passwordCompare(password:string): Promise <any>  {
-
-        
-     return "hellpo";
-        
-    }
     
 
     async singUpConsaltant(user:IUserModel):Promise<any>{
@@ -69,14 +63,22 @@ export class userBuss{
     
     if (username != null && password != null) {
         let user = await new userBuss().getAuthenticated(username);
-        const correctPassword: boolean = await new userBuss().passwordCompare(password);
-        if(user!=null && correctPassword) return user ;
-        if(!correctPassword) return 'email or password is wrong';
-        else return 'some thing went wrong';
-        
-        
-        
+        if(user!=null) {
+            if (user.status == "Not Active"){
+               return "Please Active Your Account"
+            }
+        }
+      
+        bcrypt.compare(password, user.password, async (err, isMatch) => {
+            if (err) throw err;
+            if (!isMatch) {
+                return "User Name and Password dose not exists";
+            }
+             else {
+                let currentTime=new Date().toString();}
+             }
     }
+
     
     
 
