@@ -75,9 +75,9 @@ export class userBuss{
                 return "User Name and Password dose not exists";
             }
              else {
-                let currentTime=new Date().toString();}
-             });
-    }
+                throw "some thing went Wrong"}
+}
+        )}
 
     
     
