@@ -2,6 +2,7 @@ import {IUserModel} from "../DL/Models/IUser";
 //import { Iconsaltants } from "../DL/Models/consaltants";
 import { MainUser } from "../DL/DC/userController";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import { user } from "src/utils/config";
 import { promises } from "dns";
 //import { MainConsaltant } from "../DataAccessLayer/DataAccessController/consaltantController";
@@ -74,11 +75,33 @@ export class userBuss{
                            return "User Name and Password dose not exists";
                         }
                         else {
-                            let currentTime=new Date().toString();}
+                            let currentTime=new Date().toString();
+                        
+                            let UserUpdate=await new userBuss().IncreementLogin(user._id,currentTime);
+                            user=await new userBuss().getOneUser(user._id);
+
+                            const authData = {
+                                id: user._id,
+                                permission: user.permission,
+                                userType: user.userType,
+                                LoginCount:user.loginCount,
+                                LastLogin:user.lastlogin
+                            }
+
+                            jwt.sign({ authData }, 'secretkey', { expiresIn: '30000s' }, (err, token) => {
+
+                                return ({
+                                    authData,
+                                    token
+                                    
+                                });
+                            });
+                            console.log("working");
                         }
-                        )
                     }
+                    )
                 }
+            }
                 return "User Name and Password can't be empty";
             }
         }
