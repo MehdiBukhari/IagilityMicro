@@ -75,9 +75,11 @@ export class userBuss{
                 return "User Name and Password dose not exists";
             }
              else {
-                throw "some thing went Wrong"}
+                return "some thing went Wrong";}
 }
-        )}
+        )
+    
+    return "User Name and Password can't be empty";}
 
     
     
