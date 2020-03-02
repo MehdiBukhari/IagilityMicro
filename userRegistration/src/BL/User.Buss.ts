@@ -57,32 +57,37 @@ export class userBuss{
     }
 
     async loginConsultant (payload:any):Promise<any>{
-    
+    try {
     let username= payload.username;
     let password= payload.password;
     
     if (username != null && password != null) {
-        try {
         let user = await new userBuss().getAuthenticated(username);
         if(user!=null) {
             if (user.status == "Not Active"){
                return "Please Active Your Account"
             }
         }
+      
         bcrypt.compare(password, user.password, async (err, isMatch) => {
             if (err) throw err;
             if (!isMatch) {
                 return "User Name and Password dose not exists";
             }
              else {
-                let currentTime=new Date().toString();
-             }
-    }) 
+                let currentTime=new Date().toString();}
+             });
+    }
+
+    
+    
+
     } catch (error) {
         return error
     }
-}
-    }
+    
+
+     }
 
     async getOneUser(_id:string):Promise<IUserModel>{
         let user=await new MainUser().getOneUser(_id);
