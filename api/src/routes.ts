@@ -14,7 +14,7 @@ export function initRoutes(app: express.Application) {
     });
     getEventManager().on('New_USER_Created', (payload: any) => {
         console.log(`New user Created`);
-        console.log('payload :', payload);
+        console.log('payloadSignup Route :', payload);
         
         
     }
@@ -23,7 +23,7 @@ export function initRoutes(app: express.Application) {
 
     getEventManager().on('USER_LOGIN', (payload: any) => {
         console.log(`USER LOGGED IN`);
-        console.log('payload :', payload);
+        console.log('payloadRoutes :', payload);
         
         
     }

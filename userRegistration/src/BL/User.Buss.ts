@@ -65,7 +65,7 @@ export class userBuss{
     if (username != null && password != null) {
         let user = await new userBuss().getAuthenticated(username);
         if (user != null) {
-            if(user!=null && user.status == "Not Active" ) {
+            if(user.status == "Not Active" ) {
             
                return "Please Active Your Account"}
                else {
@@ -88,6 +88,8 @@ export class userBuss{
                                 LastLogin:user.lastlogin
                             }
 
+                            
+                        
                             jwt.sign({ authData }, 'secretkey', { expiresIn: '30000s' }, (err, token) => {
 
                                 return ({
@@ -97,13 +99,19 @@ export class userBuss{
                                 });
                             });
                             console.log("working");
+                            
                         }
                     }
                     )
                 }
             }
+            return(payload);
+            
+            }
+            else{
                 return "User Name and Password can't be empty";
             }
+            
         }
 
     async getOneUser(_id:string):Promise<IUserModel>{

@@ -21,6 +21,8 @@ function start() {
           }  
         console.log(`MICRO APP micro-user-registered`);
         console.log('payload :', payload);
+        console.log('UserResponseSignUP :', userResponse);
+    
     });
 
     eventManager.on('LOGIN', async (payload: any) => {
@@ -33,7 +35,9 @@ function start() {
         }
        
         console.log(`MICRO APP micro-user-registered`);
-        console.log('payload :', payload);
+        console.log('payloadIndex :', payload);
+        console.log('UserResponseLogin :', userResponse);
+        
     });
 
 
