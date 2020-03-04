@@ -21,11 +21,6 @@ export class userBuss{
              return user;       
         }
         
-        
-
-
-      
-    
 
     async singUpConsaltant(user:IUserModel):Promise<any>{
         try {
@@ -96,7 +91,7 @@ export class userBuss{
                                     authData,
                                     token
                                     
-                                });
+                                }); 
                             });
                             console.log("working");
                             
