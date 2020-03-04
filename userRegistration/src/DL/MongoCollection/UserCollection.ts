@@ -1,13 +1,13 @@
 let validator = require("validator");
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
-import {IUserModel} from "../Models/IUser";
+import { IUserModel } from "../Models/IUser";
 let SALT_WORK_FACTOR = 10;
-  // these values can be whatever you want - we're defaulting to a
-  // max of 5 attempts, resulting in a 2 hour lock
-  let MAX_LOGIN_ATTEMPTS = 5;
- let  LOCK_TIME = 2 * 60 * 60 * 1000;
-const UserSchema=new mongoose.Schema({
+// these values can be whatever you want - we're defaulting to a
+// max of 5 attempts, resulting in a 2 hour lock
+let MAX_LOGIN_ATTEMPTS = 5;
+let LOCK_TIME = 2 * 60 * 60 * 1000;
+const UserSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
@@ -34,47 +34,47 @@ const UserSchema=new mongoose.Schema({
     type: String,
     required: true
   },
-  activationCodes:[
+  activationCodes: [
     {
-      code:{type:String}
+      code: { type: String }
     }
   ],
   userType: {
     type: String,
     required: true
   },
-  status:{
-    type:String,
-    required:true
+  status: {
+    type: String,
+    required: true
   },
-  forgetpasswordstring:{
-    type:String
+  forgetpasswordstring: {
+    type: String
   },
-  lastlogin:{
-    type:String
+  lastlogin: {
+    type: String
   },
-  loginCount:{
-    type:Number
+  loginCount: {
+    type: Number
   }
-}); 
-UserSchema.virtual("isLocked").get(function(this:IUserModel) {
+});
+UserSchema.virtual("isLocked").get(function (this: IUserModel) {
   // check for a future lockUntil timestamp
-  
+
   return !!(this.lockUntil && this.lockUntil > Date.now());
 });
 
-UserSchema.pre<IUserModel>("save", function(next) {
+UserSchema.pre<IUserModel>("save", function (next) {
   const user = this;
 
   // only hash the password if it has been modified (or is new)
   if (!user.isModified("password")) return next();
 
   // generate a salt
-  bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
+  bcrypt.genSalt(SALT_WORK_FACTOR, function (err, salt) {
     if (err) return next(err);
 
     // hash the password using our new salt
-    bcrypt.hash(user.password, salt,function(err, hash) {
+    bcrypt.hash(user.password, salt, function (err, hash) {
       if (err) return next(err);
 
       // set the hashed password back on our user document
@@ -84,14 +84,14 @@ UserSchema.pre<IUserModel>("save", function(next) {
   });
 });
 
-UserSchema.methods.comparePassword = function(candidatePassword:any, cb:any) {
-  bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
+UserSchema.methods.comparePassword = function (candidatePassword: any, cb: any) {
+  bcrypt.compare(candidatePassword, this.password, function (err, isMatch) {
     if (err) return cb(err);
     cb(null, isMatch);
   });
 };
 
-UserSchema.methods.incLoginAttempts = function(cb:any) {
+UserSchema.methods.incLoginAttempts = function (cb: any) {
   // if we have a previous lock that has expired, restart at 1
   if (this.lockUntil && this.lockUntil < Date.now()) {
     return this.update(
@@ -106,7 +106,7 @@ UserSchema.methods.incLoginAttempts = function(cb:any) {
   var updates = { $inc: { loginAttempts: 1 } };
   // lock the account if we've reached max attempts and it's not locked already
   if (this.loginAttempts + 1 >= MAX_LOGIN_ATTEMPTS && !this.isLocked) {
-  //  updates.$set = { lockUntil: Date.now() + LOCK_TIME };
+    //  updates.$set = { lockUntil: Date.now() + LOCK_TIME };
   }
   return this.update(updates, cb);
 };
@@ -118,8 +118,8 @@ var reasons = (UserSchema.statics.failedLogin = {
   MAX_ATTEMPTS: 2
 });
 
-UserSchema.statics.getAuthenticated = function(username:string, password:string, cb:any) {
-  this.findOne({ username: username }, function(err:any, user:any) {
+UserSchema.statics.getAuthenticated = function (username: string, password: string, cb: any) {
+  this.findOne({ username: username }, function (err: any, user: any) {
     if (err) return cb(err);
 
     // make sure the user exists
@@ -130,14 +130,14 @@ UserSchema.statics.getAuthenticated = function(username:string, password:string,
     // check if the account is currently locked
     if (user.isLocked) {
       // just increment login attempts if account is already locked
-      return user.incLoginAttempts(function(err:any) {
+      return user.incLoginAttempts(function (err: any) {
         if (err) return cb(err);
         return cb(null, null, reasons.MAX_ATTEMPTS);
       });
     }
 
     // test for a matching password
-    user.comparePassword(password, function(err:any, isMatch:boolean) {
+    user.comparePassword(password, function (err: any, isMatch: boolean) {
       if (err) return cb(err);
 
       // check if the password was a match
@@ -149,14 +149,14 @@ UserSchema.statics.getAuthenticated = function(username:string, password:string,
           $set: { loginAttempts: 0 },
           $unset: { lockUntil: 1 }
         };
-        return user.update(updates, function(err:any) {
+        return user.update(updates, function (err: any) {
           if (err) return cb(err);
           return cb(null, user);
         });
       }
 
       // password is incorrect, so increment login attempts before responding
-      user.incLoginAttempts(function(err:any) {
+      user.incLoginAttempts(function (err: any) {
         if (err) return cb(err);
         return cb(null, null, reasons.PASSWORD_INCORRECT);
       });
@@ -165,4 +165,4 @@ UserSchema.statics.getAuthenticated = function(username:string, password:string,
 };
 
 
-export const userSchema=mongoose.model<IUserModel>("User", UserSchema);
+export const userSchema = mongoose.model<IUserModel>("User", UserSchema);

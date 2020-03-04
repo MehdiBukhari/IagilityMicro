@@ -6,7 +6,7 @@ export function initRoutes(app: express.Application) {
         const { EventName, payload } = req.body;
         if (EventName && payload) {
             getEventManager().emit(EventName, payload);
-          console.log('playLoad',payload);
+            console.log('playLoad', payload);
             res.sendStatus(204);
         } else {
             res.sendStatus(400)
@@ -15,19 +15,19 @@ export function initRoutes(app: express.Application) {
     getEventManager().on('New_USER_Created', (payload: any) => {
         console.log(`New user Created`);
         console.log('payloadSignup Route :', payload);
-        
-        
+
+
     }
-    
+
     );
 
     getEventManager().on('USER_LOGIN', (payload: any) => {
         console.log(`USER LOGGED IN`);
         console.log('payloadRoutes :', payload);
-        
-        
+
+
     }
-    
+
     );
 
 }
