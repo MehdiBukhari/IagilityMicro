@@ -19,7 +19,7 @@ function start() {
     // Create eventManager Instance (only one for all  applciation)
        initEventManager();
        //intilize all the quese
-       //SetupQues();
+       SetupQues();
        //initilizing web socket
        login();
        //const app = initApplication();
