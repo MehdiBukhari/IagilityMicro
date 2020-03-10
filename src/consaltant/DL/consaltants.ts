@@ -1,0 +1,155 @@
+import {Document} from "mongoose";
+import { IBussniessSkils } from "../../BussniessSkills/DL/CBussniessSkills";
+import {Icots} from "../../cots/DL/cots";
+import {ITechSkilss} from "../../TechnicalSkills/DL/CTechnicalSkills";
+import {IUserModel} from "../../User/DL/user"
+export interface Iconsaltants extends Document{
+    _id:string
+    C_Picture_URL:string
+    C_First_Name:string
+    C_Last_Name:string
+    C_Profile_Title:string
+    C_Career_Level:string
+    Summary:string
+    Email:string
+    Work_Authorization:{
+        work_auth_main_type:string
+        wor_auth_sub_type:string
+        wor_auth_sub_type_other:string
+    }
+    iAgility_Personality_Type:string
+    
+    Current_Location:{
+        address:string
+        Country:string
+        Zip_Postal_Code:string
+    }
+    Contact_Information:{
+        
+        cell:string
+        Adress:string
+        LinkedIn_URL:string
+        Facebook_URL:string
+        Twitter_URL:string
+    }
+  
+    Availability:{
+        availability_date:string
+        status:string 
+    }
+    Personal_Assessment:{
+        Dealing_with_Pressure_Stress:{
+            Self_Control:string
+            Competitive:string
+            Stress_Tolerance:string
+        }
+        Energy_Drive:{
+            Energy:string
+            Ambition:string
+            Leadership_Potential:string
+            Social_Confidence:string
+            Persuasion:string
+            Flexibility:string
+        }
+        Working_with_others:{
+            Outgoing:string
+            Teamwork:string
+            Concern_for_others:string
+            Democratic:string
+        }
+        Work_Style:{
+            Dependability:string
+            Persistence:string
+            Attention_to_Detail:string
+            Rule_Following:string
+            Planning:string
+            Cooperative:string
+            Courteous:string
+            Calm:string
+            Creative:string
+            Efficient:string
+            Technological:string
+        }
+        Problem_Solving:{
+            Innovation:string
+            Analytical_Thinking:string
+        }
+    }
+    Bussniess_Skill:[
+        {
+            id?:string
+            Bussniess_Skill_ID:IBussniessSkils["_id"]
+        }
+    ]
+    Employment_History:[
+        {
+            _id:string
+            Emp_Job_Title:string
+            Company_Name:string
+            Emp_Location:string
+            Emp_Description:string
+            Emp_Experience_Duration:{
+                Emp_DateFrom:string
+                Emp_DateTo:string
+                Emp_Current_Job_check:string 
+            }
+            
+        }
+    ]
+    Education:[
+        {
+            _id:string
+            E_Degree_Level:string
+            E_Majors:string
+            E_School:string
+            E_Completion_Year:string
+        }
+
+    ]
+    Ceritifications:[
+        {
+            _id:string
+            Cert_Name:string
+            Cert_Expiry:string
+            Life_Time_Check:string
+            Cert_Completion_Year:string
+
+        }
+    ]
+    Resumes:[
+        {
+            _id?:string
+            Resume_Title:string
+            Resume_File_URL:string
+        }
+    ]
+    Portfolos:[
+        {
+        _id?:string
+        Portfolio_Title:string
+        Portfolio_File_URL:string
+        }
+    ]
+    Technical_Skills:[
+        {
+            _id?:string
+            Tech_skill_type:string
+            Tech_skill_id_if_type_defulat?:ITechSkilss["_id"]
+            Tech_skill_name_other:string
+        }
+    ]
+    COTS:[
+        {
+            _id:string
+            cots_skill_type:string
+            cots_skill_id_if_type_defulat?:Icots["_id"]
+            cots_skill_name_other:string
+        }
+    ]
+    userId:IUserModel["_id"]
+    createdAt:string
+    updatedAt:string
+    updateby:string
+    createdby:string
+
+} 
