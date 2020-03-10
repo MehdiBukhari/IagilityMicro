@@ -1,16 +1,16 @@
 import express, { response } from 'express';
-import { userBuss } from "../../BussniessLogicLayer/User.Buss";
-import { IUserModel } from '../../DataAccessLayer/Models/user';
-import { Iconsaltants } from "../../DataAccessLayer/Models/consaltants";
-import { ConsaltantBuss } from "../../BussniessLogicLayer/consaltant.buss";
+import { userBuss } from "../../User/BL/User.Buss";
+import { IUserModel } from '../../User/DL/user';
+import { Iconsaltants } from "../../consaltant/DL/consaltants";
+import { ConsaltantBuss } from "../../consaltant/BL/consaltant.buss";
 import fs from 'fs';
 import handlebars from "handlebars";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import "../../utils/config"
-import { Mail } from "../../utils/mail";
-import { Filters } from "../../utils/Filters";
-import auth from "../../DataAccessLayer/Services/auth/Authenticate";
+import { Mail } from "../../utills/mail";
+import { Filters } from "../../utills/Filters";
+import auth from "../../utills/auth/Authenticate";
 import e from 'express';
 
 export class UserPresention {
