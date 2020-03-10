@@ -1,33 +1,40 @@
 import express = require("express");
-import { getEventManager } from "./eventManager";
-
+import { getEventManager, RoboConnecter} from "./eventManager";
+import {RxStompRPC, RxStompConfig, RxStomp} from "@stomp/rx-stomp";
+const rpcEndPoint = '/amq/queue/iaglity::login';
+Object.assign(global, { WebSocket: require('websocket').w3cwebsocket });
 export function initRoutes(app: express.Application) {
-    app.post('/event', (req, res, next) => {
-        const { EventName, payload } = req.body;
-        if (EventName && payload) {
-            getEventManager().emit(EventName, payload);
-            console.log('playLoad', payload);
-            res.sendStatus(204);
-        } else {
-            res.sendStatus(400)
-        }
-    });
-    getEventManager().on('New_USER_Created', (payload: any) => {
-        console.log(`New user Created`);
-        console.log('payloadSignup Route :', payload);
+    login();
+ }
+function randomInt(max:any)  {
+    return Math.floor(Math.random() * max);
+  }
+  export function login() {
+    let rxStomp = RoboConnecter();
+    // This endpoint will wait for random period before responding to simulate real RPC servers
+    rxStomp.watch(rpcEndPoint).subscribe(function (request:any) {
+      console.log("RPC Server: Request: " + request.body);
+      // The response needs to be sent back here, it can safely be inlined
+      const replyTo = request.headers['reply-to'];
+      // Same correlation id needs to be sent back as message header, it can safely be inlined
+      const correlationId = request.headers['correlation-id'];
+      // simulate a random delay while computing
+      setTimeout(function () {
+        // Process the request, compute the response
+        const operands = JSON.parse(request.body);
+        const result = {result: Number.parseInt(operands.x) + Number.parseInt(operands.y)};
+        // Completed processing
+        const responseBody = JSON.stringify(result);
+        console.log("RPC Server: Response: " + responseBody + " for " + request.body);
+        // Send the response back to destination `replyTo` with `correlation-id` header
+        rxStomp.publish({
+          destination: replyTo,
+          body: responseBody,
+          headers: {'correlation-id': correlationId}
+        });
+      }, randomInt(10));
+    });  
+    
+    
 
-
-    }
-
-    );
-
-    getEventManager().on('USER_LOGIN', (payload: any) => {
-        console.log(`USER LOGGED IN`);
-        console.log('payloadRoutes :', payload);
-
-
-    }
-
-    );
-
-}
+  };

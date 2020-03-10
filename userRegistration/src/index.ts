@@ -26,22 +26,16 @@ function start() {
     });
 
     eventManager.on('LOGIN', async (payload: any) => {
-
-
         let newuser: IUserModel = payload.user;
         let userResponse = await new userBuss().loginConsultant(newuser);
         if (userResponse != 'email or password is wrong') {
             eventManager.emit('USER_LOGIN', userResponse);
         }
-
         console.log(`MICRO APP micro-user-registered`);
         console.log('payloadIndex :', payload);
         console.log('UserResponseLogin :', userResponse);
 
     });
-
-
-
     mongoose.connection.openUri('mongodb://localhost:27017/iaglitymicro', { useNewUrlParser: true });
     mongoose.connection.on('connected', () => {
         console.log("Connected to DB");

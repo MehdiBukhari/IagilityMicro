@@ -109,7 +109,6 @@ export class userBuss {
         }
 
     }
-
     async getOneUser(_id: string): Promise<IUserModel> {
         let user = await new MainUser().getOneUser(_id);
         if (user == null) {
