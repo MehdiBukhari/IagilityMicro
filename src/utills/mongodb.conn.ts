@@ -1,15 +1,15 @@
-import mongoose, {Mongoose} from "mongoose";
+import {connect,connection}from "mongoose";
 export class DbMongo{
-    mongoose:Mongoose
+    //connect:Mongoose
     constructor(){
-        this.mongoose=mongoose
+        //this.mongoose=mongoose
     }
     connect(h:string,p:number,dbName:string,u?:string,pass?:string){
         let connectionuri=`mongodb://${h}:${p}/${dbName}`;
         if(u!=undefined && pass!=undefined){
                  connectionuri=`mongodb://${u}:${pass}@${h}:${p}/${dbName}`;
         }
-        mongoose.connect(connectionuri,{
+       connect(connectionuri,{
            useNewUrlParser:true,
            useCreateIndex:true,
            useFindAndModify:false,
@@ -23,4 +23,4 @@ export class DbMongo{
          })
     }
 }
-export let MonStatConnection=new DbMongo().mongoose.connection.readyState
+export let MonStatConnection=connection.readyState

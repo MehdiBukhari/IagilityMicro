@@ -1,6 +1,6 @@
-import mongoose from "mongoose"
+import {Schema, model} from "mongoose"
 import { Iconsaltants } from "../DL/consaltants";
-const ConsltantSchema = new mongoose.Schema({
+const ConsltantSchema = new Schema({
   C_Picture_URL:{type:String},
   C_First_Name:{type:String,required:true},
   C_Last_Name:{type:String,required:true},
@@ -16,7 +16,7 @@ const ConsltantSchema = new mongoose.Schema({
   iAgility_Personality_Type:{type:String},
   Bussniess_Skill:[
     {
-        Bussniess_Skill_ID:{type:mongoose.Schema.Types.ObjectId, ref: "cbussniessskills"}
+        Bussniess_Skill_ID:{type:Schema.Types.ObjectId, ref: "cbussniessskills"}
     }
   ],
   
@@ -123,23 +123,23 @@ const ConsltantSchema = new mongoose.Schema({
   Technical_Skills:[
       {
           Tech_skill_type:{type:String},
-          Tech_skill_id_if_type_defulat:{type: mongoose.Schema.Types.ObjectId, ref: "CTechSkill" },
+          Tech_skill_id_if_type_defulat:{type: Schema.Types.ObjectId, ref: "CTechSkill" },
           Tech_skill_name_other:{type:String}
       }
   ],
   COTS:[
       {
           cots_skill_type:{type:String},
-          cots_skill_id_if_type_defulat:{type: mongoose.Schema.Types.ObjectId, ref: "cots" },
+          cots_skill_id_if_type_defulat:{type: Schema.Types.ObjectId, ref: "cots" },
           cots_skill_name_other:{type:String}
       }
   ],
 
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User",required:true },
-  updateby: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  createdby: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
+  userId: { type: Schema.Types.ObjectId, ref: "User",required:true },
+  updateby: { type: Schema.Types.ObjectId, ref: "User" },
+  createdby: { type: Schema.Types.ObjectId, ref: "User" }
 },
 {
   timestamps:true
 });
-export const ConsultantsSchema= mongoose.model<Iconsaltants>("consultant", ConsltantSchema);
+export const ConsultantsSchema= model<Iconsaltants>("consultant", ConsltantSchema);

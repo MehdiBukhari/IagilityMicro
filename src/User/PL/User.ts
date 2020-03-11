@@ -3,74 +3,140 @@ import { userBuss } from "../../User/BL/User.Buss";
 import { IUserModel } from '../../User/DL/user';
 import { Iconsaltants } from "../../consaltant/DL/consaltants";
 import { ConsaltantBuss } from "../../consaltant/BL/consaltant.buss";
-import fs from 'fs';
+import {readFileSync} from 'fs';
 import handlebars from "handlebars";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import "../../utils/config"
+import {compare, compareSync} from "bcrypt";
+import {sign} from "jsonwebtoken";
+//import "../../utils/config"
 import { Mail } from "../../utills/mail";
 import { Filters } from "../../utills/Filters";
 import auth from "../../utills/auth/Authenticate";
 import e from 'express';
 
 export class UserPresention {
-    router: express.Router
-    constructor() {
-        this.router = express.Router();
-        this.routes();
-
+    async login(username:string,password:string){
+        if (username != null && password != null) {
+            // attempt to authenticate user
+            let user = await new userBuss().getAuthenticated(username);
+            // login was successful if we have a user
+            if (user != null) {
+                if (user.status == "Not Active") {
+                    return JSON.stringify({messege: "Please Active Your Account"});
+                } else {
+                 //   return JSON.stringify({messege: user});
+                 let passwordcompare=compareSync(password,user.password);
+                    if(passwordcompare){
+                        let currentTime = new Date().toString();
+                        let UserUpdate = await new userBuss().IncreementLogin(user._id, currentTime);
+                        user = await new userBuss().getOneUser(user._id);
+                        // handle login success
+                        const authData = {
+                            id: user._id,
+                            permission: user.permission,
+                            userType: user.userType,
+                            LoginCount: user.loginCount,
+                            LastLogin: user.lastlogin
+                        }
+                        let _token=sign({ authData }, 'secretkey', { expiresIn: '30000s' })
+                        return JSON.stringify({
+                            authData,
+                            _token
+                        });
+                    }else{
+                        return JSON.stringify({messege: "Not Valid User"});
+                    }
+                }
+            } else {
+                return JSON.stringify({
+                    messege: "User Name and Password dose not exists"
+                });
+            }
+        } else {
+            return JSON.stringify({
+                messege: "User Name and Password can't be empty"
+            });
+        } 
     }
-    routes() { 
+    async consaltantSignup(consaltant:Iconsaltants,user:IUserModel){
+
+        user.status = "Not Active"
+        user.activationCodes = [
+            {
+                code: Math.floor(100000 + Math.random() * 900000) + ''
+            }
+        ]
+        let newuser = await new userBuss().singUpConsaltan(user, consaltant)
+        if (newuser != {}) {
+            let html = readFileSync('./src/Public/mailtemp/activationCode/activationCode.html', 'utf8');
+            let template = handlebars.compile(html)
+            let replacments = {
+                username: consaltant.C_First_Name,
+                Activationcode: user.activationCodes[0].code
+            }
+            let htmltosend = template(replacments)
+            let newMail = await new Mail(user.email, "Activation Code", user.activationCodes[0].code, htmltosend);
+            newMail.sendMail();
+            return JSON.stringify({
+                messege: "new User Created Succssfully Cheack Email for Activation Code",
+                newuser
+            });
+        } else {
+            return JSON.stringify({
+                messege: "user Not Created"
+            })
+        }
+    }
+    /* routes() {
         this.router.post('/consaltantSignup', async (req, res) => {
             let user: IUserModel = JSON.parse(req.body.user)
             user.status = "Not Active"
             let consaltant: Iconsaltants = JSON.parse(req.body.consultant)
             let fileData = req.files
             if (user != null && consaltant != null) {
-                    if(fileData != null){
-                        let consaltant_pic = req.files.profile_picture;
-                        if(consaltant_pic!=null){
-                            consaltant.C_Picture_URL = Date.now() + consaltant_pic.name;
-                            if (new Filters().ImageFilter(consaltant_pic.mimetype)) {
-            
-                                consaltant_pic.mv("./uploads/" + consaltant.C_Picture_URL);
-                            }
-                        } 
-                        let consultant_profile = req.files.consultant_profile;
-                        if(consultant_profile!=null){
-                            let resume: string = Date.now() + consultant_profile.name + '';
-                            consaltant.Resumes = [
-                                {
-                                    Resume_Title: consultant_profile.name,
-                                    Resume_File_URL: resume
-                                }
-                            ]    
-                            if (new Filters().ResumeFilter(consultant_profile.mimetype)) {
-            
-                                consultant_profile.mv("./Resumeuploads/" + consaltant.Resumes[0].Resume_Title);
-                            } 
-                        }
-                        
+                if (fileData != null) {
+                    let consaltant_pic = req.files.profile_picture;
+                    if (consaltant_pic != null) {
+                        consaltant.C_Picture_URL = Date.now() + consaltant_pic.name;
+                        if (new Filters().ImageFilter(consaltant_pic.mimetype)) {
 
-                       
-                    }
-                    user.activationCodes = [
-                        {
-                            code: Math.floor(100000 + Math.random() * 900000) + ''
+                            consaltant_pic.mv("./uploads/" + consaltant.C_Picture_URL);
                         }
-                    ]
+                    }
+                    let consultant_profile = req.files.consultant_profile;
+                    if (consultant_profile != null) {
+                        let resume: string = Date.now() + consultant_profile.name + '';
+                        consaltant.Resumes = [
+                            {
+                                Resume_Title: consultant_profile.name,
+                                Resume_File_URL: resume
+                            }
+                        ]
+                        if (new Filters().ResumeFilter(consultant_profile.mimetype)) {
+
+                            consultant_profile.mv("./Resumeuploads/" + consaltant.Resumes[0].Resume_Title);
+                        }
+                    }
+
+
+
+                }
+                user.activationCodes = [
+                    {
+                        code: Math.floor(100000 + Math.random() * 900000) + ''
+                    }
+                ]
 
                 let newuser = await new userBuss().singUpConsaltan(user, consaltant)
 
                 if (newuser != {}) {
-                    let html=fs.readFileSync('./Public/mailtemp/activationCode/activationCode.html','utf8');
-                    let template=handlebars.compile(html) 
-                    let replacments={
-                         username:consaltant.C_First_Name,
-                         Activationcode:user.activationCodes[0].code
-                     }
-                     let htmltosend=template(replacments)
-                    let newMail = await new Mail(user.email, "Activation Code", user.activationCodes[0].code,htmltosend);
+                    let html = fs.readFileSync('./Public/mailtemp/activationCode/activationCode.html', 'utf8');
+                    let template = handlebars.compile(html)
+                    let replacments = {
+                        username: consaltant.C_First_Name,
+                        Activationcode: user.activationCodes[0].code
+                    }
+                    let htmltosend = template(replacments)
+                    let newMail = await new Mail(user.email, "Activation Code", user.activationCodes[0].code, htmltosend);
                     newMail.sendMail();
                     res.status(200).json({
                         messege: "new User Created Succssfully Cheack Email for Activation Code",
@@ -102,8 +168,6 @@ export class UserPresention {
                             messege: "Please Active Your Account"
                         });
                     } else {
-
-
                         bcrypt.compare(password, user.password, async (err, isMatch) => {
                             if (err) throw err;
                             if (!isMatch) {
@@ -111,25 +175,25 @@ export class UserPresention {
                                     messege: "User Name and Password dose not exists"
                                 });
                             } else {
-                                let currentTime=new Date().toString();
-                                
+                                let currentTime = new Date().toString();
+
                                 //update loginAttempt
-                                let UserUpdate=await new userBuss().IncreementLogin(user._id,currentTime);
-                                 user=await new userBuss().getOneUser(user._id);
+                                let UserUpdate = await new userBuss().IncreementLogin(user._id, currentTime);
+                                user = await new userBuss().getOneUser(user._id);
                                 // handle login success
                                 const authData = {
                                     id: user._id,
                                     permission: user.permission,
                                     userType: user.userType,
-                                    LoginCount:user.loginCount,
-                                    LastLogin:user.lastlogin
+                                    LoginCount: user.loginCount,
+                                    LastLogin: user.lastlogin
                                 }
                                 jwt.sign({ authData }, 'secretkey', { expiresIn: '30000s' }, (err, token) => {
 
                                     res.json({
                                         authData,
                                         token
-                                        
+
                                     });
                                 });
                                 console.log("working");
@@ -194,14 +258,14 @@ export class UserPresention {
             if (user != null && user.status == "Not Active") {
                 if (user.activationCodes.filter(acode => (acode.code === activationCode)).length > 0) {
                     let response = await new userBuss().UpdateStatus(_id);
-                    let consaltant:Iconsaltants=await new ConsaltantBuss().getOneConsaltantByUserId(user._id);
-                    let html=fs.readFileSync('./Public/mailtemp/activationCode/AfterActivation.html','utf8');
-                    let template=handlebars.compile(html) 
-                    let replacments={
-                        username:consaltant.C_First_Name
+                    let consaltant: Iconsaltants = await new ConsaltantBuss().getOneConsaltantByUserId(user._id);
+                    let html = fs.readFileSync('./Public/mailtemp/activationCode/AfterActivation.html', 'utf8');
+                    let template = handlebars.compile(html)
+                    let replacments = {
+                        username: consaltant.C_First_Name
                     }
-                     let htmltosend=template(replacments)
-                    let newMail = new Mail(user.email, "Account Is Activated", ' ',htmltosend);
+                    let htmltosend = template(replacments)
+                    let newMail = new Mail(user.email, "Account Is Activated", ' ', htmltosend);
                     newMail.sendMail();
                     res.status(200).json({
                         message: "User Activated"
@@ -230,17 +294,17 @@ export class UserPresention {
                         message: "Account is already active"
                     })
                 } else {
-                    let consaltant:Iconsaltants=await new ConsaltantBuss().getOneConsaltantByUserId(user._id);
+                    let consaltant: Iconsaltants = await new ConsaltantBuss().getOneConsaltantByUserId(user._id);
                     let code = Math.floor(100000 + Math.random() * 900000) + ''
                     let newCode = await new userBuss().reGenrateCode(_id, code);
-                    let html=fs.readFileSync('./Public/mailtemp/activationCode/activationCode.html','utf8');
-                    let template=handlebars.compile(html) 
-                    let replacments={
-                         username:consaltant.C_First_Name,
-                         Activationcode:code
-                     }
-                     let htmltosend=template(replacments)
-                    let newMail = new Mail(user.email, "Activation Code", code,htmltosend);
+                    let html = fs.readFileSync('./Public/mailtemp/activationCode/activationCode.html', 'utf8');
+                    let template = handlebars.compile(html)
+                    let replacments = {
+                        username: consaltant.C_First_Name,
+                        Activationcode: code
+                    }
+                    let htmltosend = template(replacments)
+                    let newMail = new Mail(user.email, "Activation Code", code, htmltosend);
                     newMail.sendMail();
                     res.status(200).json({
                         message: "New Code Sent"
@@ -264,15 +328,15 @@ export class UserPresention {
                         if (err) throw err
                         let forget = new userBuss().forgotpasswordLinkgenration(user._id, hash);
                         let forgetLink = "http://69.16.200.12:8001/recover-password/" + hash + "|jaboo|||" + user._id
-                        
+
                         let html = fs.readFileSync('./Public/mailtemp/activationCode/Forgetpassword.html', 'utf8');
                         let template = handlebars.compile(html)
                         let replacments = {
                             username: consaltant.C_First_Name,
-                            forgetLink:forgetLink
+                            forgetLink: forgetLink
                         }
                         let htmltosend = template(replacments)
-                        let newMail = new Mail(user.email, "Password Reset Link", '',htmltosend);
+                        let newMail = new Mail(user.email, "Password Reset Link", '', htmltosend);
                         newMail.sendMail();
                         res.status(200).json({
                             message: "Link Send to your registerd email"
@@ -284,29 +348,29 @@ export class UserPresention {
         })
         this.router.post('/changePasswordFromToken', async (req, res) => {
             let token = req.body.rt
-            let NewPassword=req.body.NewPassword
+            let NewPassword = req.body.NewPassword
             let tokenarry = token.split("|jaboo|||")
-            let user=await new userBuss().getOneUser(tokenarry[1])
-            if(user==null){
+            let user = await new userBuss().getOneUser(tokenarry[1])
+            if (user == null) {
                 res.status(200).json({
-                    message:"wrong user with token"
+                    message: "wrong user with token"
                 })
-            }else{
-                if(tokenarry[0]==user.forgetpasswordstring){
-                    bcrypt.genSalt(10,(err,salt)=>{
-                        if(err) throw err
-                        bcrypt.hash(NewPassword,salt,(err,hash)=>{
-                            let response=new userBuss().updatePassword(user._id,hash)
+            } else {
+                if (tokenarry[0] == user.forgetpasswordstring) {
+                    bcrypt.genSalt(10, (err, salt) => {
+                        if (err) throw err
+                        bcrypt.hash(NewPassword, salt, (err, hash) => {
+                            let response = new userBuss().updatePassword(user._id, hash)
                             let forget = new userBuss().forgotpasswordLinkgenration(user._id, '');
                             res.status(200).json({
-                                 message:"New Password Updated"
+                                message: "New Password Updated"
                             });
                         });
                     })
-                    
+
                 }
             }
         })
-    }
+    } */
 }
-export const UserRoutes = new UserPresention().router
+//export const UserRoutes = new UserPresention()

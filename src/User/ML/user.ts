@@ -1,13 +1,13 @@
 let validator = require("validator");
-import mongoose from "mongoose";
-import bcrypt from "bcrypt";
+import {Schema,model} from "mongoose";
+import {genSalt,hash,compare} from "bcrypt";
 import {IUserModel} from "../DL/user";
 let SALT_WORK_FACTOR = 10;
   // these values can be whatever you want - we're defaulting to a
   // max of 5 attempts, resulting in a 2 hour lock
   let MAX_LOGIN_ATTEMPTS = 5;
  let  LOCK_TIME = 2 * 60 * 60 * 1000;
-const UserSchema=new mongoose.Schema({
+const UserSchema=new Schema({
   username: {
     type: String,
     required: true,
@@ -70,11 +70,11 @@ UserSchema.pre<IUserModel>("save", function(next) {
   if (!user.isModified("password")) return next();
 
   // generate a salt
-  bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
+  genSalt(SALT_WORK_FACTOR, function(err, salt) {
     if (err) return next(err);
 
     // hash the password using our new salt
-    bcrypt.hash(user.password, salt,function(err, hash) {
+    hash(user.password, salt,function(err, hash) {
       if (err) return next(err);
 
       // set the hashed password back on our user document
@@ -85,7 +85,7 @@ UserSchema.pre<IUserModel>("save", function(next) {
 });
 
 UserSchema.methods.comparePassword = function(candidatePassword:any, cb:any) {
-  bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
+  compare(candidatePassword, this.password, function(err, isMatch) {
     if (err) return cb(err);
     cb(null, isMatch);
   });
@@ -165,4 +165,4 @@ UserSchema.statics.getAuthenticated = function(username:string, password:string,
 };
 
 
-export const userSchema=mongoose.model<IUserModel>("User", UserSchema);
+export const userSchema=model<IUserModel>("User", UserSchema);
