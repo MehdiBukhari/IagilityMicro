@@ -152,60 +152,52 @@ export class UserPresention {
                 })
             }
     }
-    /* routes() {
-      
-          
-        
-        this.router.post('/regenrateCode', async (req, res) => {
-            let _id = req.body._id;
-            let user = await new userBuss().getOneUser(_id);
-            if (user == null) {
-                res.status(200).json({
-                    message: "this user does not exits"
+    async regenrateCode(_id:string){
+        let user = await new userBuss().getOneUser(_id);
+        if (user == null) {
+            return JSON.stringify({
+                message: "this user does not exits"
+            })
+        } else {
+            if (user.status == 'Active') {
+                return JSON.stringify({
+                    message: "Account is already active"
                 })
             } else {
-                if (user.status == 'Active') {
-                    res.status(200).json({
-                        message: "Account is already active"
-                    })
-                } else {
-                    let consaltant: Iconsaltants = await new ConsaltantBuss().getOneConsaltantByUserId(user._id);
-                    let code = Math.floor(100000 + Math.random() * 900000) + ''
-                    let newCode = await new userBuss().reGenrateCode(_id, code);
-                    let html = fs.readFileSync('./Public/mailtemp/activationCode/activationCode.html', 'utf8');
-                    let template = handlebars.compile(html)
-                    let replacments = {
-                        username: consaltant.C_First_Name,
-                        Activationcode: code
-                    }
-                    let htmltosend = template(replacments)
-                      let newMail = new Mail(user.email, "Activation Code", code, htmltosend);
-                    newMail.sendMail();
-                    res.status(200).json({
-                        message: "New Code Sent"
-                    })
+                let consaltant: Iconsaltants = await new ConsaltantBuss().getOneConsaltantByUserId(user._id);
+                let code = Math.floor(100000 + Math.random() * 900000) + ''
+                let newCode = await new userBuss().reGenrateCode(_id, code);
+                let html = readFileSync('./src/Public/mailtemp/activationCode/activationCode.html', 'utf8');
+                let template = handlebars.compile(html)
+                let replacments = {
+                    username: consaltant.C_First_Name,
+                    Activationcode: code
                 }
-
+                let htmltosend = template(replacments)
+                  let newMail = new Mail(user.email, "Activation Code", code, htmltosend);
+                newMail.sendMail();
+                return JSON.stringify({
+                    message: "New Code Sent"
+                })
             }
 
-        })
-        this.router.post('/forgetPassword', async (req, res) => {
-            let email = req.body.email
-            let user = await new userBuss().getAuthenticated(email);
-
+        }
+    }
+    async forgetPassword(email:string){
+        let user = await new userBuss().getAuthenticated(email);
             if (user == null) {
-                message: "this email is not in our database"
+                return JSON.stringify({
+                    message: "this email is not in our database"
+                })
+                
             } else {
                 let consaltant: Iconsaltants = await new ConsaltantBuss().getOneConsaltantByUserId(user._id);
-                bcrypt.genSalt(10, (err, salt) => {
-                    if (err) throw err
-                    bcrypt.hash(email, salt, (err, hash) => {
-                        if (err) throw err
-                        let forget = new userBuss().forgotpasswordLinkgenration(user._id, hash);
-                        let forgetLink = "http://69.16.200.12:8001/recover-password/" + hash + "|jaboo|||" + user._id
-
-                        let html = fs.readFileSync('./Public/mailtemp/activationCode/Forgetpassword.html', 'utf8');
-                        let template = handlebars.compile(html)
+                let newsalt=(await genSalt(10));
+                let newhas=  (await hash(email, newsalt))
+                let forget = new userBuss().forgotpasswordLinkgenration(user._id, newhas);
+                let forgetLink = "http://<...>/recover-password/" + newhas + "|jaboo|||" + user._id
+                let html = readFileSync('./src/Public/mailtemp/activationCode/Forgetpassword.html', 'utf8');
+                let template = handlebars.compile(html)
                         let replacments = {
                             username: consaltant.C_First_Name,
                             forgetLink: forgetLink
@@ -213,39 +205,29 @@ export class UserPresention {
                         let htmltosend = template(replacments)
                         let newMail = new Mail(user.email, "Password Reset Link", '', htmltosend);
                         newMail.sendMail();
-                        res.status(200).json({
+                        return JSON.stringify({
                             message: "Link Send to your registerd email"
                         })
-                    })
-                })
             }
-
-        })
-        this.router.post('/changePasswordFromToken', async (req, res) => {
-            let token = req.body.rt
-            let NewPassword = req.body.NewPassword
-            let tokenarry = token.split("|jaboo|||")
+    }
+    async changePasswordFromToken(token:string,NewPassword:string){
+        let tokenarry = token.split("|jaboo|||")
             let user = await new userBuss().getOneUser(tokenarry[1])
             if (user == null) {
-                res.status(200).json({
+                return JSON.stringify({
                     message: "wrong user with token"
                 })
             } else {
                 if (tokenarry[0] == user.forgetpasswordstring) {
-                    bcrypt.genSalt(10, (err, salt) => {
-                        if (err) throw err
-                        bcrypt.hash(NewPassword, salt, (err, hash) => {
-                            let response = new userBuss().updatePassword(user._id, hash)
-                            let forget = new userBuss().forgotpasswordLinkgenration(user._id, '');
-                            res.status(200).json({
+                    let newsalt=await genSalt(10)
+                    let newhash = await hash(NewPassword, newsalt)
+                    let response = new userBuss().updatePassword(user._id, newhash)
+                    let forget = new userBuss().forgotpasswordLinkgenration(user._id, '');
+                    return JSON.stringify({
                                 message: "New Password Updated"
                             });
-                        });
-                    })
-
-                }
+                    }
             }
-        })
-    } */
+    }
 }
-//export const UserRoutes = new UserPresention()
+

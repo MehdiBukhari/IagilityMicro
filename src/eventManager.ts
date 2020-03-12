@@ -19,6 +19,9 @@ export function SetupQues():any{
     QueGenratorOnExchange('ConsaltantSignup','ConsaltantSignup Qur');
     QueGenratorOnExchange('ChangePassword','Change Password Que');
     QueGenratorOnExchange('ConsaltantActivation','Consaltant Activation Que');
+    QueGenratorOnExchange('regenrateCode','regenrate Code');
+    QueGenratorOnExchange('forgetPassword','forget Password');
+    QueGenratorOnExchange('changePasswordFromToken','change Password From Token Que');
 }
 export function RoboConnecter():RxStomp{
     let rxStomp = new RxStomp();
