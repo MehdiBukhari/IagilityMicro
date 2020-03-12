@@ -3,10 +3,10 @@ import { userBuss } from "../../User/BL/User.Buss";
 import { IUserModel } from '../../User/DL/user';
 import { Iconsaltants } from "../../consaltant/DL/consaltants";
 import { ConsaltantBuss } from "../../consaltant/BL/consaltant.buss";
-import {readFileSync} from 'fs';
+import { readFileSync } from 'fs';
 import handlebars from "handlebars";
-import {compare, compareSync} from "bcrypt";
-import {sign} from "jsonwebtoken";
+import { compare, compareSync, genSalt, hash } from "bcrypt";
+import { sign, verify } from "jsonwebtoken";
 //import "../../utils/config"
 import { Mail } from "../../utills/mail";
 import { Filters } from "../../utills/Filters";
@@ -14,18 +14,18 @@ import auth from "../../utills/auth/Authenticate";
 import e from 'express';
 
 export class UserPresention {
-    async login(username:string,password:string){
+    async login(username: string, password: string) {
         if (username != null && password != null) {
             // attempt to authenticate user
             let user = await new userBuss().getAuthenticated(username);
             // login was successful if we have a user
             if (user != null) {
                 if (user.status == "Not Active") {
-                    return JSON.stringify({messege: "Please Active Your Account"});
+                    return JSON.stringify({ messege: "Please Active Your Account" });
                 } else {
-                 //   return JSON.stringify({messege: user});
-                 let passwordcompare=compareSync(password,user.password);
-                    if(passwordcompare){
+                    //   return JSON.stringify({messege: user});
+                    let passwordcompare = compareSync(password, user.password);
+                    if (passwordcompare) {
                         let currentTime = new Date().toString();
                         let UserUpdate = await new userBuss().IncreementLogin(user._id, currentTime);
                         user = await new userBuss().getOneUser(user._id);
@@ -37,13 +37,13 @@ export class UserPresention {
                             LoginCount: user.loginCount,
                             LastLogin: user.lastlogin
                         }
-                        let _token=sign({ authData }, 'secretkey', { expiresIn: '30000s' })
+                        let _token = sign({ authData }, 'secretkey', { expiresIn: '30000s' })
                         return JSON.stringify({
                             authData,
                             _token
                         });
-                    }else{
-                        return JSON.stringify({messege: "Not Valid User"});
+                    } else {
+                        return JSON.stringify({ messege: "Not Valid User" });
                     }
                 }
             } else {
@@ -55,9 +55,9 @@ export class UserPresention {
             return JSON.stringify({
                 messege: "User Name and Password can't be empty"
             });
-        } 
+        }
     }
-    async consaltantSignup(consaltant:Iconsaltants,user:IUserModel){
+    async consaltantSignup(consaltant: Iconsaltants, user: IUserModel) {
 
         user.status = "Not Active"
         user.activationCodes = [
@@ -86,180 +86,51 @@ export class UserPresention {
             })
         }
     }
-    /* routes() {
-        this.router.post('/consaltantSignup', async (req, res) => {
-            let user: IUserModel = JSON.parse(req.body.user)
-            user.status = "Not Active"
-            let consaltant: Iconsaltants = JSON.parse(req.body.consultant)
-            let fileData = req.files
-            if (user != null && consaltant != null) {
-                if (fileData != null) {
-                    let consaltant_pic = req.files.profile_picture;
-                    if (consaltant_pic != null) {
-                        consaltant.C_Picture_URL = Date.now() + consaltant_pic.name;
-                        if (new Filters().ImageFilter(consaltant_pic.mimetype)) {
-
-                            consaltant_pic.mv("./uploads/" + consaltant.C_Picture_URL);
-                        }
-                    }
-                    let consultant_profile = req.files.consultant_profile;
-                    if (consultant_profile != null) {
-                        let resume: string = Date.now() + consultant_profile.name + '';
-                        consaltant.Resumes = [
-                            {
-                                Resume_Title: consultant_profile.name,
-                                Resume_File_URL: resume
-                            }
-                        ]
-                        if (new Filters().ResumeFilter(consultant_profile.mimetype)) {
-
-                            consultant_profile.mv("./Resumeuploads/" + consaltant.Resumes[0].Resume_Title);
-                        }
-                    }
-
-
-
-                }
-                user.activationCodes = [
-                    {
-                        code: Math.floor(100000 + Math.random() * 900000) + ''
-                    }
-                ]
-
-                let newuser = await new userBuss().singUpConsaltan(user, consaltant)
-
-                if (newuser != {}) {
-                    let html = fs.readFileSync('./Public/mailtemp/activationCode/activationCode.html', 'utf8');
-                    let template = handlebars.compile(html)
-                    let replacments = {
-                        username: consaltant.C_First_Name,
-                        Activationcode: user.activationCodes[0].code
-                    }
-                    let htmltosend = template(replacments)
-                    let newMail = await new Mail(user.email, "Activation Code", user.activationCodes[0].code, htmltosend);
-                    newMail.sendMail();
-                    res.status(200).json({
-                        messege: "new User Created Succssfully Cheack Email for Activation Code",
-                        newuser
-                    });
-                } else {
-                    res.status(500).json({
-                        messege: "user Not Created"
-                    })
-                }
-            } else {
-                res.status(200).json({
-                    messege: "data is not complete"
-                })
-            }
-
-
-        })
-        this.router.post('/login', async (req, res) => {
-            let username = req.body.username;
-            let password = req.body.password;
-            if (username != null && password != null) {
-                // attempt to authenticate user
-                let user = await new userBuss().getAuthenticated(username);
-                // login was successful if we have a user
-                if (user != null) {
-                    if (user.status == "Not Active") {
-                        res.json({
-                            messege: "Please Active Your Account"
-                        });
-                    } else {
-                        bcrypt.compare(password, user.password, async (err, isMatch) => {
-                            if (err) throw err;
-                            if (!isMatch) {
-                                res.json({
-                                    messege: "User Name and Password dose not exists"
-                                });
-                            } else {
-                                let currentTime = new Date().toString();
-
-                                //update loginAttempt
-                                let UserUpdate = await new userBuss().IncreementLogin(user._id, currentTime);
-                                user = await new userBuss().getOneUser(user._id);
-                                // handle login success
-                                const authData = {
-                                    id: user._id,
-                                    permission: user.permission,
-                                    userType: user.userType,
-                                    LoginCount: user.loginCount,
-                                    LastLogin: user.lastlogin
-                                }
-                                jwt.sign({ authData }, 'secretkey', { expiresIn: '30000s' }, (err, token) => {
-
-                                    res.json({
-                                        authData,
-                                        token
-
-                                    });
-                                });
-                                console.log("working");
-                            }
-                        });
-                    }
-                } else {
-                    res.json({
-                        messege: "User Name and Password dose not exists"
-                    });
-                }
-            } else {
-                res.json({
-                    messege: "User Name and Password can't be empty"
-                });
-            }
-        });
-        this.router.post('/changepassword', auth.verifyToken, async (req, res) => {
-            let userId = req.authData.authData.id;
-            let NewPassword = req.body.NewPassword
-            let OldPassword = req.body.OldPassword
+    async changePassword(_token: string, OldPassword: string, NewPassword: string) {
+        try {
+            let responseData = JSON.parse(JSON.stringify(verify(_token, 'secretkey')));
+            let userId = responseData.authData.id;
             let user: IUserModel = await new userBuss().getOneUser(userId);
             //res.send(user);
             if (user == null) {
-                res.status(200).json({
+                return JSON.stringify({
                     message: "you are not allowed to change password"
                 })
             } else {
-                bcrypt.compare(OldPassword, user.password, (err, isMatch) => {
-                    if (err) throw err
-                    if (!isMatch) {
-                        res.status(200).json({
-                            messege: "Wrong Old Password"
-                        })
-                    } else {
-                        // query to handle password update
-                        let passwordhash
-                        bcrypt.genSalt(10, (err, salt) => {
-                            if (err) throw err
-                            bcrypt.hash(NewPassword, salt, (err, hash) => {
-                                if (err) throw err
-                                let response = new userBuss().updatePassword(user._id, hash);
-                                let newMail = new Mail(user.email, "New Password Genrated", "some One has recently changed your Password");
-                                newMail.sendMail();
-                                res.status(200).json({
-                                    message: "password Updated"
-                                });
-
-                            })
-                        })
-
-
+                let ismatch = compare(OldPassword, user.password)
+                if (!ismatch) {
+                    return JSON.stringify({
+                        messege: "Wrong Old Password"
+                    })
+                } else {
+                    // query to handle password update
+                    let newsalt = (await genSalt(10))
+                    let newhash = (await hash(NewPassword, newsalt))
+                    let response = new userBuss().updatePassword(user._id, newhash);
+                    if (response) {
+                        let newMail = new Mail(user.email, "New Password Genrated", "some One has recently changed your Password");
+                        newMail.sendMail();
+                        return JSON.stringify({
+                            message: "password Updated"
+                        });
                     }
-                })
+                }
             }
-        });
-        this.router.post('/consaltantActivation', async (req, res) => {
-            let _id = req.body._id
-            let activationCode = req.body.activationCode
-            let user = await new userBuss().getOneUser(_id)
+        } catch (error) {
+            return JSON.stringify({
+                error: error
+            })
+        }
 
+
+    }
+    async consaltantActivation(_id:string,activationCode:string){          
+            let user = await new userBuss().getOneUser(_id)
             if (user != null && user.status == "Not Active") {
                 if (user.activationCodes.filter(acode => (acode.code === activationCode)).length > 0) {
                     let response = await new userBuss().UpdateStatus(_id);
                     let consaltant: Iconsaltants = await new ConsaltantBuss().getOneConsaltantByUserId(user._id);
-                    let html = fs.readFileSync('./Public/mailtemp/activationCode/AfterActivation.html', 'utf8');
+                    let html = readFileSync('./src/Public/mailtemp/activationCode/AfterActivation.html', 'utf8');
                     let template = handlebars.compile(html)
                     let replacments = {
                         username: consaltant.C_First_Name
@@ -267,20 +138,24 @@ export class UserPresention {
                     let htmltosend = template(replacments)
                     let newMail = new Mail(user.email, "Account Is Activated", ' ', htmltosend);
                     newMail.sendMail();
-                    res.status(200).json({
+                    return JSON.stringify({
                         message: "User Activated"
                     })
                 } else {
-                    res.status(200).json({
+                    return JSON.stringify({
                         messege: "wrong activation code"
                     })
                 }
             } else {
-                res.status(200).json({
-                    messege: "No user Found"
+                return JSON.stringify({
+                    messege: "No user Found or user already activated"
                 })
             }
-        });
+    }
+    /* routes() {
+      
+          
+        
         this.router.post('/regenrateCode', async (req, res) => {
             let _id = req.body._id;
             let user = await new userBuss().getOneUser(_id);
@@ -304,7 +179,7 @@ export class UserPresention {
                         Activationcode: code
                     }
                     let htmltosend = template(replacments)
-                    let newMail = new Mail(user.email, "Activation Code", code, htmltosend);
+                      let newMail = new Mail(user.email, "Activation Code", code, htmltosend);
                     newMail.sendMail();
                     res.status(200).json({
                         message: "New Code Sent"

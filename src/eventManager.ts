@@ -15,11 +15,10 @@ export function getEventManager(): EventManager {
     throw new Error('EventManager have not been initialized')
 }
 export function SetupQues():any{      
-    //getEventManager().emit('login',{"message":"Authorization Queue Setup"})
-    getEventManager().emit('ConsaltantSignup',{"message":"ConsaltantSignup Qur Setup"})
-    getEventManager().on('ConsaltantSignup',async (playload:any)=>{
-        console.log(playload);
-});
+    Eventgenrator('login','login Que Setup');
+    Eventgenrator('ConsaltantSignup','ConsaltantSignup Qur Setup');
+    Eventgenrator('ChangePassword','Change Password Que');
+    Eventgenrator('ConsaltantActivation','Consaltant Activation Que');
 }
 export function RoboConnecter():RxStomp{
     let rxStomp = new RxStomp();
@@ -39,4 +38,10 @@ export function RoboConnecter():RxStomp{
         return error;
     }
     return rxStomp;
+}
+export function Eventgenrator(eventName:string,message:string){
+    getEventManager().emit(eventName,{"message":message})
+    getEventManager().on(eventName,async (playload:any)=>{
+        console.log(playload);
+});
 }
