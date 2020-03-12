@@ -14,11 +14,11 @@ export function getEventManager(): EventManager {
     }
     throw new Error('EventManager have not been initialized')
 }
-export function SetupQues():any{      
-    Eventgenrator('login','login Que Setup');
-    Eventgenrator('ConsaltantSignup','ConsaltantSignup Qur Setup');
-    Eventgenrator('ChangePassword','Change Password Que');
-    Eventgenrator('ConsaltantActivation','Consaltant Activation Que');
+export function SetupQues():any{
+    QueGenratorOnExchange('login','login Que Setup');
+    QueGenratorOnExchange('ConsaltantSignup','ConsaltantSignup Qur');
+    QueGenratorOnExchange('ChangePassword','Change Password Que');
+    QueGenratorOnExchange('ConsaltantActivation','Consaltant Activation Que');
 }
 export function RoboConnecter():RxStomp{
     let rxStomp = new RxStomp();
@@ -39,7 +39,7 @@ export function RoboConnecter():RxStomp{
     }
     return rxStomp;
 }
-export function Eventgenrator(eventName:string,message:string){
+export function QueGenratorOnExchange(eventName:string,message:string){
     getEventManager().emit(eventName,{"message":message})
     getEventManager().on(eventName,async (playload:any)=>{
         console.log(playload);
