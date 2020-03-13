@@ -16,10 +16,17 @@ export class MainTechnicaleSkill{
     deleteComment(_id:string){
         return ICommentsSchema.findByIdAndDelete(_id)
     }
-    /*
-    getcotsComment(){
+
+    getcotsCommentlist(){
         return ICommentsSchema.find();
     }
+
+    getcotsCommentlistByJob(Cots_Function:string){
+        return ICommentsSchema.find({Comment_Function:Cots_Function});
+    }
+    
+    /*
+    
     getcotstechnicallistByName(Cots_Function:string){
         return ICommentsSchema.find({Tech_Function:Cots_Function});
     }*/
