@@ -8,6 +8,12 @@ const ConsltantSchema = new Schema({
   C_Career_Level:{type:String},
   Summary:{type:String},
   Email:{type:String,index: { unique: true },required:true},
+  ApprovelStatus:{type:String},
+    DisArrovalStatus:{
+        DisapprovalReasone:{type:String},
+        DisapprovingPersonId:{type:Schema.Types.ObjectId,ref:"User"},
+        DisapprovalTime:{type:String},
+    },
   Work_Authorization:{
     work_auth_main_type:{type:String},
     wor_auth_sub_type:{type:String},

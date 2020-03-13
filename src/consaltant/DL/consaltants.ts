@@ -12,9 +12,15 @@ export interface Iconsaltants extends Document{
     C_Career_Level:string
     Summary:string
     Email:string
+    ApprovelStatus:string
+    DisArrovalStatus:{
+        DisapprovalReasone:string,
+        DisapprovingPersonId:IUserModel["_id"]
+        DisapprovalTime:string,
+    }
     Work_Authorization:{
         work_auth_main_type:string
-        wor_auth_sub_type:string
+        work_auth_sub_type:string
         wor_auth_sub_type_other:string
     }
     iAgility_Personality_Type:string
