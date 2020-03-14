@@ -1,25 +1,25 @@
-import  {InotesShema}  from "../ML/Notes" 
+import  {NoteSchema}  from "../ML/Notes" 
 import {INOTES} from "../DL/INOTES"
-export class MainBussniessSkill{
+export class MainNOtes{
     constructor(){
 
     }
     getNotes(_id:string){
-       return InotesShema.findById(_id);
+       return NoteSchema.findById(_id);
     }
     saveNotes(notes:INOTES){
-        return new InotesShema (notes).save();
+        return new NoteSchema (notes).save();
     }
     updatenotes(notes:INOTES){
-        return InotesShema.findByIdAndUpdate(notes._id,notes,{new:true})
+        return NoteSchema.findByIdAndUpdate(notes._id,notes,{new:true})
     }
     deleteNotes(_id:string){
-        return InotesShema.findByIdAndDelete(_id)
+        return NoteSchema.findByIdAndDelete(_id)
     }
     getNotesList(){
-        return InotesShema.find();
+        return NoteSchema.find();
     }
     getcotsNotesByName(Cots_Function:string){
-        return InotesShema.find({Notes_Function:Cots_Function});
+        return NoteSchema.find({Notes_Function:Cots_Function});
     }
 }
