@@ -3,7 +3,7 @@ import {IUserModel} from "../../User/DL/user"
 import { Interface } from "readline";
 export interface IADMIN extends Document{
     _id:string
-    FiirstName:string,
+    FirstName:string,
     LastName:string,
     Desgination:string,
     cell:string,
