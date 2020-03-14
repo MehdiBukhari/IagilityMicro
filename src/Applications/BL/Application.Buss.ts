@@ -23,7 +23,7 @@ export class ApplicationBuss{
     async deleteApplication(_id:string){
         return await new MainApplication().deletApplication(_id);
     }
-    async getcotsList():Promise<IAPPLICATIONS[]>{
+    async getApplicationList():Promise<IAPPLICATIONS[]>{
         let application:IAPPLICATIONS[]=await new MainApplication().getApplicationlist();
         return application
     }
