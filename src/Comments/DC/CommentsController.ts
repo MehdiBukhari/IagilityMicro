@@ -1,6 +1,6 @@
 import  {ICommentsSchema}  from "../ML/Comments" 
 import {IComments} from "../DL/IComments"
-export class MainTechnicaleSkill{
+export class MainComment{
     constructor(){
 
     }
@@ -21,7 +21,7 @@ export class MainTechnicaleSkill{
         return ICommentsSchema.find();
     }
 
-    getcotsCommentlistByJob(Cots_Function:string){
+    getcotsCommentlistByJob(JOB:string){
         return ICommentsSchema.find({Comment_Function:Cots_Function});
     }
     
