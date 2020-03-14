@@ -22,7 +22,7 @@ export class MainComment{
     }
 
     getcotsCommentlistByJob(JOB:string){
-        return ICommentsSchema.find({Comment_Function:Cots_Function});
+        return ICommentsSchema.find({Comment_Function:JOB});
     }
     
     /*
