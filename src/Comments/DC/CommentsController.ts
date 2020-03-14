@@ -4,9 +4,9 @@ export class MainComment{
     constructor(){
 
     }
-    /*getComment(_id:string){
+    getComment(_id:string){
        return ICommentsSchema.findById(_id);
-    }*/
+    }
     saveComment(Comment:IComments){
         return new ICommentsSchema(Comment).save();
     }
