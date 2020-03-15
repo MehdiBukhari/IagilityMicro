@@ -20,7 +20,7 @@ export class JobBuss{
          throw 'category not updated g'+job._id;
           return update_job
     }
-    async deletcots(_id:string){
+    async deleteJob(_id:string){
         return await new MainJOB().deletjob(_id);
     }
     async getJobList():Promise<IJOB[]>{
