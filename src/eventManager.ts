@@ -123,7 +123,7 @@ export function SetupQues():any{
     QueGenratorOnExchange('consaltantNewCode','consaltant New Code Que');
     QueGenratorOnExchange('forget Password','forget Password Que');
     QueGenratorOnExchange('IncreementLogin','Increement Login Que');
-    QueGenratorOnExchange('updatepassword','updatepassword Que');
+    
 
 
 
