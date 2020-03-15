@@ -16,5 +16,8 @@ export class MainContract{
     deletContractPrefrnces(_id:string){
         return ContractPrefrncesSchema.findByIdAndDelete(_id)
     }
+    getContractList(){
+        return ContractPrefrncesSchema.find();
+    }
     
 }
