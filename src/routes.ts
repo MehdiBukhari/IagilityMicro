@@ -19,6 +19,7 @@ export function initRoutes(app: express.Application) {
     regenrateCode();
     forgetPassword();
     changePasswordFromToken();
+    
  }
 function randomInt(max:any)  {
     return Math.floor(Math.random() * max);

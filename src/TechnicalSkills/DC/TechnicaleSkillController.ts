@@ -4,22 +4,22 @@ export class MainTechnicaleSkill{
     constructor(){
 
     }
-    getTechnicaleSkill(_id:string){
+    getTechnicalSkill(_id:string){
        return TechSkillsSchema.findById(_id);
     }
-    savetechnicaleSkill(tecskill:ITechSkilss){
+    savetechnicalSkill(tecskill:ITechSkilss){
         return new TechSkillsSchema(tecskill).save();
     }
-    updateTechnicaleSkills(tecskill:ITechSkilss){
+    updateTechnicalSkills(tecskill:ITechSkilss){
         return TechSkillsSchema.findByIdAndUpdate(tecskill._id,tecskill,{new:true})
     }
-    deletTechnicaleSKill(_id:string){
+    deletTechnicalSKill(_id:string){
         return TechSkillsSchema.findByIdAndDelete(_id)
     }
-    getcotsTechnicalelist(){
+    getTechnicalSkillList(){
         return TechSkillsSchema.find();
     }
-    getcotstechnicallistByName(Cots_Function:string){
+    getTechnicalSkillByName(Cots_Function:string){
         return TechSkillsSchema.find({Tech_Function:Cots_Function});
     }
 }

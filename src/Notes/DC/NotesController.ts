@@ -19,7 +19,7 @@ export class MainNOtes{
     getNotesList(){
         return NoteSchema.find();
     }
-    getcotsNotesByName(Cots_Function:string){
+    getNotesByName(Cots_Function:string){
         return NoteSchema.find({Notes_Function:Cots_Function});
     }
 }

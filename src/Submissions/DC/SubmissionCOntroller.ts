@@ -7,7 +7,7 @@ export class MainSubmisson{
     getSubmission(_id:string){
        return subSchema.findById(_id);
     }
-    saveSubmissionn(submission:ISUBMISSIONS){
+    saveSubmission(submission:ISUBMISSIONS){
         return new subSchema(submission).save();
     }
     updateSubmission(submission:ISUBMISSIONS){
