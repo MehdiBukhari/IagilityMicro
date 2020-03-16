@@ -7,7 +7,7 @@ export class AdminBuss{
     async getadmin(_id:string):Promise<IADMIN>{
         let admin=await new MainAdmin().getAdmin(_id);
          if(admin===null)
-         throw 'cots doest not exits'
+         throw 'Admin doest not exits'
          return admin;
     }
     async saveadmin(admin:IADMIN):Promise<IADMIN>{

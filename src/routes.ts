@@ -231,7 +231,7 @@ export function getadminList() {
         setTimeout(async function() {
             // Process the request, compute the response
             const operands = JSON.parse(request.body);
-            const result = await adminPre.GetAdminList();
+            const result = await adminPre.GetAdminList(operands.token);
             // Completed processing
             const responseBody = JSON.stringify(result);
             console.log('RPC Server: Response: ' + responseBody + ' for ' + request.body);
@@ -258,7 +258,7 @@ export function saveadmin() {
         setTimeout(async function() {
             // Process the request, compute the response
             const operands = JSON.parse(request.body);
-            const result = await adminPre.saveAdmin(operands.id);
+            const result = await adminPre.saveAdmin(operands.token,operands.id);
             // Completed processing
             const responseBody = JSON.stringify(result);
             console.log('RPC Server: Response: ' + responseBody + ' for ' + request.body);
@@ -285,7 +285,7 @@ export function updateAdmin() {
         setTimeout(async function() {
             // Process the request, compute the response
             const operands = JSON.parse(request.body);
-            const result = await adminPre.UpdateAdmin(operands.admin);
+            const result = await adminPre.UpdateAdmin(operands.token,operands.admin);
             // Completed processing
             const responseBody = JSON.stringify(result);
             console.log('RPC Server: Response: ' + responseBody + ' for ' + request.body);
@@ -312,7 +312,7 @@ export function getadmin() {
         setTimeout(async function() {
             // Process the request, compute the response
             const operands = JSON.parse(request.body);
-            const result = await adminPre.getAdmin(operands.id);
+            const result = await adminPre.getAdmin(operands.token,operands.id);
             // Completed processing
             const responseBody = JSON.stringify(result);
             console.log('RPC Server: Response: ' + responseBody + ' for ' + request.body);
@@ -339,7 +339,7 @@ export function deletadmin() {
         setTimeout(async function() {
             // Process the request, compute the response
             const operands = JSON.parse(request.body);
-            const result = await adminPre.deleteAdmin(operands.id);
+            const result = await adminPre.deleteAdmin(operands.token,operands.id);
             // Completed processing
             const responseBody = JSON.stringify(result);
             console.log('RPC Server: Response: ' + responseBody + ' for ' + request.body);
