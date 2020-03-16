@@ -2,28 +2,21 @@ import express from 'express';
 import { AdminBuss } from '../BL/admin.buss';
 import { IADMIN } from '../DL/IAdmin';
 import { MainAdmin } from '../DC/AdminController';
-import { sign, verify } from "jsonwebtoken";
+import { sign, verify } from 'jsonwebtoken';
 import { IUserModel } from '../../User/DL/user';
-import { userBuss } from "../../User/BL/User.Buss";
+import { userBuss } from '../../User/BL/User.Buss';
 
 export class AdminPresention {
-
-
     async getAdmin(_token: string, id: string) {
-
         try {
-
             let responseData = JSON.parse(JSON.stringify(verify(_token, 'secretkey')));
             let userId = responseData.authData.id;
             let user: IUserModel = await new userBuss().getOneUser(userId);
             if (user == null) {
                 return JSON.stringify({
-                    message: "you are not allowed to get Admin Information"
-                })
-            }
-
-            else {
-
+                    message: 'you are not allowed to get Admin Information',
+                });
+            } else {
                 let admin = await new AdminBuss().getadmin(id);
                 if (admin === null)
                     return JSON.stringify({
@@ -32,107 +25,81 @@ export class AdminPresention {
                 else {
                     return admin;
                 }
-
             }
-
         } catch (error) {
             return JSON.stringify({
-                error: error
-            })
+                error: error,
+            });
         }
-
-
     }
 
-    async saveAdmin(_token: string, admin: IADMIN,user:IUserModel) {
+    async saveAdmin(_token: string, admin: IADMIN) {
         try {
             let responseData = JSON.parse(JSON.stringify(verify(_token, 'secretkey')));
             let userId = responseData.authData.id;
-            let userType=responseData.authData.userType;
-            let user = await new userBuss().getOneUser(userId);
-            if(userType=='admin'){
-                let newAdmin = await new AdminBuss().saveadmin(admin); 
-                     
-            }else{
+            let userType = responseData.authData.userType;
+            let user: IUserModel = await new userBuss().getOneUser(userId);
+
+            if (userType == 'admin') {
+                let newAdmin = await new AdminBuss().saveadmin(admin);
+            } else {
                 return JSON.stringify({
-                    message: "you are not allowed to save Admin"
-                })
+                    message: 'you are not allowed to save Admin',
+                });
             }
-            
-
         } catch (error) {
-
             return JSON.stringify({
-                error: error
-            })
-
+                error: error,
+            });
         }
-
     }
 
     async UpdateAdmin(_token: string, admin: IADMIN) {
-
         try {
-
             let responseData = JSON.parse(JSON.stringify(verify(_token, 'secretkey')));
             let userId = responseData.authData.id;
             let user: IUserModel = await new userBuss().getOneUser(userId);
             if (user == null) {
                 return JSON.stringify({
-                    message: "you are not allowed to update Admin information"
-                })
-            }
-            else {
-
+                    message: 'you are not allowed to update Admin information',
+                });
+            } else {
                 let Upadated_admin = await new AdminBuss().updateAdmin(admin);
 
                 return JSON.stringify({
-                    message: "Admin information updated"
-                })
-
+                    message: 'Admin information updated',
+                });
             }
-
         } catch (error) {
-
             return JSON.stringify({
-                error: error
-            })
-
+                error: error,
+            });
         }
-
     }
 
     async deleteAdmin(_token: string, id: string) {
-
         try {
-
             let responseData = JSON.parse(JSON.stringify(verify(_token, 'secretkey')));
             let userId = responseData.authData.id;
             let user: IUserModel = await new userBuss().getOneUser(userId);
             if (user == null) {
                 return JSON.stringify({
-                    message: "you are not allowed to delete Admin "
-                })
-            }
-            else {
-
+                    message: 'you are not allowed to delete Admin ',
+                });
+            } else {
                 let Deleted_admin = await new AdminBuss().deletadmin(id);
                 return JSON.stringify({
-                    message: "admin sucessfully deleted "
-                })
-
+                    message: 'admin sucessfully deleted ',
+                });
             }
-
         } catch (error) {
             return JSON.stringify({
-                error: error
-            })
+                error: error,
+            });
         }
-
     }
 
-    async GetAdminList(_token: string){
-
+    async GetAdminList(_token: string) {
         try {
             let responseData = JSON.parse(JSON.stringify(verify(_token, 'secretkey')));
             let userId = responseData.authData.id;
@@ -140,27 +107,13 @@ export class AdminPresention {
 
             if (user === null) {
                 return JSON.stringify({
-                    message: "you are not allowed to get admin list "
-                })
+                    message: 'you are not allowed to get admin list ',
+                });
+            } else {
+                let adminList: IADMIN[] = await new AdminBuss().getadminList();
+                return adminList;
             }
-
-            else {
-
-            let adminList: IADMIN[] = await new AdminBuss().getadminList();
-            return adminList;
-
-            }
-            
-
-
-
-
-        } catch (error) {
-
-            
-
-        }
-
+        } catch (error) {}
     }
 }
 
