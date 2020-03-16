@@ -44,27 +44,20 @@ export class AdminPresention {
 
     }
 
-    async saveAdmin(_token: string, admin: IADMIN) {
-
+    async saveAdmin(_token: string, admin: IADMIN,user:IUserModel) {
         try {
-
             let responseData = JSON.parse(JSON.stringify(verify(_token, 'secretkey')));
             let userId = responseData.authData.id;
-            let user: IUserModel = await new userBuss().getOneUser(userId);
-            if (user == null) {
+            let userType=responseData.authData.userType;
+            
+            if(userType=='admin'){
+                        
+            }else{
                 return JSON.stringify({
                     message: "you are not allowed to save Admin"
                 })
             }
-
-            else {
-
-                let New_admin = await new AdminBuss().saveadmin(admin);
-
-                return JSON.stringify({
-                    message: "Admin information saved"
-                })
-            }
+            
 
         } catch (error) {
 
