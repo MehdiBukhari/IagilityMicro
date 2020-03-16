@@ -1,8 +1,43 @@
 import express from 'express';
 import { AdminBuss } from '../BL/admin.buss';
 import { IADMIN } from '../DL/IAdmin';
+import { MainAdmin } from '../DC/AdminController';
+
 export class AdminPresention {
-    router: express.Router;
+
+
+    async getAdmin(id: string) {
+        let admin = await new AdminBuss().getadmin(id);
+        if (admin === null)
+            return JSON.stringify({
+                message: 'Admin does not exist',
+            });
+        else {
+            return admin;
+        }
+    }
+
+    async saveAdmin(admin: IADMIN) {
+        let New_admin = await new AdminBuss().saveadmin(admin);
+        return New_admin;
+    }
+
+    async UpdateAdmin(admin: IADMIN) {
+        let Upadated_admin = await new AdminBuss().updateAdmin(admin);
+        return Upadated_admin;
+    }
+
+    async deleteAdmin(id: string) {
+        return await new AdminBuss().deletadmin(id);
+    }
+
+    async GetAdminList(): Promise<IADMIN[]> {
+        let adminList: IADMIN[] = await new AdminBuss().getadminList();
+        return adminList;
+    }
+}
+
+/* router: express.Router;
     constructor() {
         this.router = express.Router();
         this.routes();
@@ -75,4 +110,4 @@ export class AdminPresention {
         });
     }
 }
-export const AdminRoutes = new AdminPresention().router;
+export const AdminRoutes = new AdminPresention().router; */

@@ -14,10 +14,10 @@ const rpcupdateAdminEndPoint = '/amq/queue/iaglity::updateAdmin';
 const rpcgetadminEndPoint = '/amq/queue/iaglity::getadmin';
 const rpcdeletadminEndPoint = '/amq/queue/iaglity::deletadmin';
 import { UserPresention } from './User/PL/User';
-import { AdminBuss } from './admin/BL/admin.buss';
+import { AdminPresention } from './admin/PL/AdminRoutes';
 Object.assign(global, { WebSocket: require('websocket').w3cwebsocket });
 const userPre: UserPresention = new UserPresention();
-const adminBussPre: AdminBuss = new AdminBuss();
+const adminPre: AdminPresention = new AdminPresention();
 export function initRoutes(app: express.Application) {
     login();
     signup();
@@ -231,7 +231,7 @@ export function getadminList() {
         setTimeout(async function() {
             // Process the request, compute the response
             const operands = JSON.parse(request.body);
-            const result = await adminBussPre.getadminList();
+            const result = await adminPre.GetAdminList();
             // Completed processing
             const responseBody = JSON.stringify(result);
             console.log('RPC Server: Response: ' + responseBody + ' for ' + request.body);
@@ -258,7 +258,7 @@ export function saveadmin() {
         setTimeout(async function() {
             // Process the request, compute the response
             const operands = JSON.parse(request.body);
-            const result = await adminBussPre.getadmin(operands.id);
+            const result = await adminPre.saveAdmin(operands.id);
             // Completed processing
             const responseBody = JSON.stringify(result);
             console.log('RPC Server: Response: ' + responseBody + ' for ' + request.body);
@@ -285,7 +285,7 @@ export function updateAdmin() {
         setTimeout(async function() {
             // Process the request, compute the response
             const operands = JSON.parse(request.body);
-            const result = await adminBussPre.updateAdmin(operands.admin);
+            const result = await adminPre.UpdateAdmin(operands.admin);
             // Completed processing
             const responseBody = JSON.stringify(result);
             console.log('RPC Server: Response: ' + responseBody + ' for ' + request.body);
@@ -312,7 +312,7 @@ export function getadmin() {
         setTimeout(async function() {
             // Process the request, compute the response
             const operands = JSON.parse(request.body);
-            const result = await adminBussPre.getadmin(operands.id);
+            const result = await adminPre.getAdmin(operands.id);
             // Completed processing
             const responseBody = JSON.stringify(result);
             console.log('RPC Server: Response: ' + responseBody + ' for ' + request.body);
@@ -339,7 +339,7 @@ export function deletadmin() {
         setTimeout(async function() {
             // Process the request, compute the response
             const operands = JSON.parse(request.body);
-            const result = await adminBussPre.deletadmin(operands.id);
+            const result = await adminPre.deleteAdmin(operands.id);
             // Completed processing
             const responseBody = JSON.stringify(result);
             console.log('RPC Server: Response: ' + responseBody + ' for ' + request.body);
