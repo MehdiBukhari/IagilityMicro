@@ -49,9 +49,10 @@ export class AdminPresention {
             let responseData = JSON.parse(JSON.stringify(verify(_token, 'secretkey')));
             let userId = responseData.authData.id;
             let userType=responseData.authData.userType;
-            
+            let user = await new userBuss().getOneUser(userId);
             if(userType=='admin'){
-                        
+                let newAdmin = await new AdminBuss().saveadmin(admin); 
+                     
             }else{
                 return JSON.stringify({
                     message: "you are not allowed to save Admin"
