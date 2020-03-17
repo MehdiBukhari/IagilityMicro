@@ -1,5 +1,7 @@
 import {IADMIN} from "../DL/IAdmin"
 import {MainAdmin} from "../DC/AdminController";
+import { IUserModel } from "src/User/DL/user";
+import { MainUser } from "src/User/DC/userController";
 export class AdminBuss{
     constructor(){
 
@@ -27,5 +29,24 @@ export class AdminBuss{
         let admin:IADMIN[]=await new MainAdmin().getAdminslist();
         return admin
     }
-    
+    async CreateAdmin(user:IUserModel,admin:IADMIN):Promise<any>{
+        let userReponse=await new MainUser().Saveuser(user);
+        console.log(user);
+        if(userReponse!==null){
+            admin.userId=userReponse._id
+            let adminResponse=await new MainAdmin().saveAdmin(admin);
+            if(adminResponse!=null){
+                let response={
+                    userReponse,
+                    adminResponse
+                }
+                return response
+            }else{
+                    return "some thing went wrong"
+            }
+        }else{
+            return "some thing went wrong";
+        }
+      
+    }
 }

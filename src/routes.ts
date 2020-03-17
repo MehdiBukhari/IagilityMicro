@@ -258,7 +258,7 @@ export function saveadmin() {
         setTimeout(async function() {
             // Process the request, compute the response
             const operands = JSON.parse(request.body);
-            const result = await adminPre.saveAdmin(operands.token,operands.admin);
+            const result = await adminPre.saveAdmin(operands.token,operands.admin,operands.user);
             // Completed processing
             const responseBody = JSON.stringify(result);
             console.log('RPC Server: Response: ' + responseBody + ' for ' + request.body);
