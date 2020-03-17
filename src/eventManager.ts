@@ -3,7 +3,7 @@ import { RxStomp } from '@stomp/rx-stomp';
 let manager: EventManager | null = null;
 export function initEventManager(): EventManager {
     manager = new EventManager({
-        url: 'amqp://localhost',
+        url: 'amqp://user:NZY8hvhRkaHr@34.94.1.35',
         application: 'iaglity',
     });
     return manager;
@@ -17,7 +17,7 @@ export function getEventManager(): EventManager {
 export function SetupQues(): any {
     QueGenratorOnExchange('login', 'login Que Setup');
     QueGenratorOnExchange('ConsaltantSignup', 'ConsaltantSignup Qur');
-    QueGenratorOnExchange('ChangePassword', 'Change Password Que');
+    /* QueGenratorOnExchange('ChangePassword', 'Change Password Que');
     QueGenratorOnExchange('ConsaltantActivation', 'Consaltant Activation Que');
     QueGenratorOnExchange('regenrateCode', 'regenrate Code');
     QueGenratorOnExchange('forgetPassword', 'forget Password');
@@ -122,17 +122,17 @@ export function SetupQues(): any {
     QueGenratorOnExchange('consaltantActivation', 'consaltantActivation Que');
     QueGenratorOnExchange('consaltantNewCode', 'consaltant New Code Que');
     QueGenratorOnExchange('forget Password', 'forget Password Que');
-    QueGenratorOnExchange('IncreementLogin', 'Increement Login Que');
+    QueGenratorOnExchange('IncreementLogin', 'Increement Login Que'); */
 }
 export function RoboConnecter(): RxStomp {
     let rxStomp = new RxStomp();
     const stompConfig = {
         connectHeaders: {
-            login: 'guest',
-            passcode: 'guest',
+            login: 'user',
+            passcode: 'NZY8hvhRkaHr',
         },
         // Broker URL, should start with ws:// or wss:// - adjust for your broker setup
-        brokerURL: 'ws://127.0.0.1:15674/ws',
+        brokerURL: 'ws://34.94.1.35:15674/ws',
         reconnectDelay: 200,
     };
     rxStomp.configure(stompConfig);

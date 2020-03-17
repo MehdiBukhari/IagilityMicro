@@ -20,7 +20,7 @@ function start() {
     // Create eventManager Instance (only one for all  applciation)
        initEventManager();
        //intilize all the quese
-       //SetupQues();
+       SetupQues();
        const app = initApplication();
        //server = app.listen(process.env.PORT || 4000, () => {
         //console.log(`Server started`);
