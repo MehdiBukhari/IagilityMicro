@@ -1,7 +1,7 @@
 import {IADMIN} from "../DL/IAdmin"
 import {MainAdmin} from "../DC/AdminController";
 import { IUserModel } from "../../User/DL/user";
-import { MainUser } from "src/User/DC/userController";
+import { MainUser } from "../../User/DC/userController";
 export class AdminBuss{
     constructor(){
 
